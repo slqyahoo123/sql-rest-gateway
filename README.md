@@ -1,5 +1,10 @@
 # SQL→API Gateway (NestJS) — Read‑only REST for Postgres
 
+![License](https://img.shields.io/badge/License-MIT-blue.svg)
+![Release](https://img.shields.io/github/v/release/slqyahoo123/sql-rest-gateway?display_name=tag)
+![Node](https://img.shields.io/badge/node-%3E%3D20-green)
+![Docker](https://img.shields.io/badge/docker-compose-blue?logo=docker)
+
 Self‑hosted, secure, read‑only SQL→API gateway for PostgreSQL.
 
 ## Features
