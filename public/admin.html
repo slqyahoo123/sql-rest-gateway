@@ -1,0 +1,262 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SQL→API Admin</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --panel: #11162a;
+      --panel-2: #0f1426;
+      --border: #232a45;
+      --fg: #e6eaf5;
+      --muted: #9aa3b2;
+      --primary: #3b82f6;
+      --primary-600: #2563eb;
+      --success: #10b981;
+      --danger: #ef4444;
+      --accent: #8b5cf6;
+      --shadow: 0 10px 30px rgba(2,6,23,0.35);
+      --shadow-sm: 0 6px 16px rgba(2,6,23,0.28);
+      --radius: 14px;
+      --radius-sm: 10px;
+      --focus: 0 0 0 3px rgba(59,130,246,0.35);
+    }
+    body.light {
+      --bg: #f6f7fb;
+      --panel: #ffffff;
+      --panel-2: #fafbff;
+      --border: #e6e8f0;
+      --fg: #0b1020;
+      --muted: #6b7280;
+      --shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body { margin: 0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif; background: var(--bg); color: var(--fg); transition: background .2s ease, color .2s ease; }
+
+    .topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(8px); background: linear-gradient(180deg, rgba(11,16,32,0.85), rgba(11,16,32,0.65)); border-bottom: 1px solid var(--border); }
+    body.light .topbar { background: rgba(255,255,255,0.7); }
+    .topbar-inner { max-width: 1200px; margin: 0 auto; padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: 0.2px; }
+    .brand .logo { width: 28px; height: 28px; border-radius: 6px; background: linear-gradient(135deg, var(--primary), var(--accent)); box-shadow: var(--shadow); }
+
+    .container { max-width: 1200px; margin: 24px auto; padding: 0 20px; }
+
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    @media (max-width: 1080px) { .grid { grid-template-columns: 1fr; } }
+
+    .card { background: linear-gradient(180deg, var(--panel), var(--panel-2)); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow); transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease; }
+    .card:hover { transform: translateY(-1px); box-shadow: var(--shadow-sm); border-color: rgba(59,130,246,0.35); }
+    .card h2 { margin: 0 0 10px; font-size: 18px; }
+    .section { margin-bottom: 24px; }
+
+    label { display: block; color: var(--muted); font-size: 12px; margin-bottom: 6px; }
+    .row { margin-bottom: 14px; }
+
+    .input, .select, textarea { width: 100%; padding: 10px 12px; background: #0b1020; border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--fg); outline: none; transition: border-color .15s ease, box-shadow .15s ease; }
+    body.light .input, body.light .select, body.light textarea { background: #fff; }
+    .input:focus, .select:focus, textarea:focus { border-color: var(--primary); box-shadow: var(--focus); }
+
+    .btn { appearance: none; border: 1px solid var(--border); background: #0b1020; color: var(--fg); padding: 10px 14px; border-radius: var(--radius-sm); cursor: pointer; transition: all .15s ease; box-shadow: var(--shadow); }
+    body.light .btn { background: #fff; }
+    .btn:hover { border-color: var(--primary); }
+    .btn-primary { background: linear-gradient(135deg, var(--primary), var(--primary-600)); border: none; color: white; }
+    .btn-primary:hover { filter: brightness(1.05); }
+    .btn-ghost { background: transparent; }
+    .btn:disabled { opacity: .6; cursor: not-allowed; filter: grayscale(.2); }
+
+    .toolbar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+
+    table { width: 100%; border-collapse: collapse; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    thead th { text-align: left; font-size: 12px; color: var(--muted); background: #0b1020; padding: 10px; border-bottom: 1px solid var(--border); }
+    body.light thead th { background: #f8fafc; }
+    tbody td { padding: 10px; border-bottom: 1px solid var(--border); }
+    tbody tr:nth-child(even) { background: rgba(255,255,255,0.02); }
+    tbody tr:hover { background: rgba(59,130,246,0.08); transition: background .12s ease; }
+
+    .muted { color: var(--muted); font-size: 12px; }
+    .ok { color: var(--success); }
+    .err { color: var(--danger); }
+
+    .kpis { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 14px; margin-bottom: 10px; }
+    .kpi { background: #0b1020; border: 1px solid var(--border); border-radius: 12px; padding: 12px; }
+    body.light .kpi { background: #fff; }
+    .kpi .label { font-size: 12px; color: var(--muted); }
+    .kpi .value { font-weight: 700; font-size: 18px; margin-top: 4px; }
+
+    .right { display: flex; align-items: center; gap: 10px; }
+    .badge { display: inline-block; padding: 2px 8px; font-size: 11px; border-radius: 999px; background: #0b1020; border: 1px solid var(--border); color: var(--muted); }
+    body.light .badge { background: #fff; }
+
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+    @media (max-width: 1080px) { .grid-3 { grid-template-columns: 1fr; } }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand"><div class="logo"></div> SQL→API Admin</div>
+      <div class="right">
+        <span class="badge">v0.1.x</span>
+        <button id="themeToggle" class="btn btn-ghost">Toggle Theme</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <div id="loginCard" class="card section">
+      <h2>Sign In</h2>
+      <div class="row">
+        <label>Admin Token</label>
+        <div class="toolbar">
+          <input id="loginToken" class="input" placeholder="Must match server ADMIN_TOKEN (default: admin_dev)" />
+          <button id="loginBtn" type="button" class="btn btn-primary">Sign In</button>
+        </div>
+        <div id="loginMsg" class="muted"></div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div>
+        <div class="card section">
+          <h2>Project & Datasource</h2>
+          <div class="row">
+            <label>New Project Name</label>
+            <div class="toolbar">
+              <input id="newProjectName" class="input" placeholder="e.g. demo" />
+              <button id="createProject" class="btn btn-primary">Create Project</button>
+            </div>
+          </div>
+          <div class="row toolbar">
+            <div style="flex:1">
+              <label>Project List</label>
+              <select id="projectList" class="select"></select>
+            </div>
+            <div>
+              <label>&nbsp;</label>
+              <button id="deleteProject" class="btn">Delete Selected Project</button>
+            </div>
+          </div>
+          <div class="row">
+            <label>Datasource DSN (for selected project)</label>
+            <input id="projectDsn" class="input" placeholder="postgres://user:pass@host:5432/db" />
+            <div class="toolbar">
+              <button id="saveDatasource" class="btn btn-primary">Save Datasource</button>
+              <button id="testDatasource" class="btn">Test Connection</button>
+              <button id="exportJSON" class="btn">Export JSON</button>
+              <button id="exportCSV" class="btn">Export CSV</button>
+            </div>
+          </div>
+          <div id="projMsg" class="muted"></div>
+        </div>
+
+        <div class="card section">
+          <h2>Audit Logs (Latest 100)</h2>
+          <div class="toolbar">
+            <input id="auditProjectId" class="input" placeholder="Project ID (optional)" style="max-width:220px" />
+            <input id="auditStatus" class="input" placeholder="HTTP Status (optional)" style="max-width:220px" />
+            <button id="refreshAudit" class="btn">Refresh</button>
+          </div>
+          <div class="row" style="max-height:320px; overflow:auto">
+            <table id="auditTable">
+              <thead><tr><th>Time</th><th>Route</th><th>Method</th><th>Status</th><th>Duration</th><th>Rows</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="card section">
+          <h2>API Key Management</h2>
+          <div class="row">
+            <label>Project ID</label>
+            <input id="projectId" class="input" placeholder="Pick from left list or type manually" />
+          </div>
+          <div class="kpis">
+            <div class="kpi"><div class="label">Rate RPS</div><div class="value"><input id="rateRps" class="input" type="number" value="5" /></div></div>
+            <div class="kpi"><div class="label">Daily Quota</div><div class="value"><input id="dailyQuota" class="input" type="number" value="10000" /></div></div>
+            <div class="kpi"><div class="label">Note</div><div class="value"><input id="keyNote" class="input" placeholder="Note (for search)" /></div></div>
+          </div>
+          <div class="row">
+            <label>Table FQN / Allowed Fields / Row Filter</label>
+            <div class="toolbar" style="gap:12px; align-items: flex-start;">
+              <input id="tableFqn" class="input" placeholder="public.products" style="max-width:240px" />
+              <input id="allowedFields" class="input" placeholder="id,name,price" style="flex:1" />
+              <input id="rowFilter" class="input" placeholder="is_active = true" style="max-width:240px" />
+              <button id="issueBtn" class="btn btn-primary">Issue Key</button>
+            </div>
+          </div>
+          <div id="issueResult" class="muted"></div>
+
+          <h3 class="row" style="margin-top:8px">Keys</h3>
+          <div class="toolbar">
+            <input id="filterProjectId" class="input" placeholder="Project ID (optional)" style="max-width:200px" />
+            <input id="keySearch" class="input" placeholder="Search by prefix or note (optional)" style="max-width:300px" />
+            <button id="refreshKeys" class="btn">Refresh</button>
+          </div>
+          <div class="row" style="max-height:320px; overflow:auto">
+            <table id="keysTable">
+              <thead><tr><th>ID</th><th>Project</th><th>Prefix</th><th>Note</th><th>Active</th><th>RPS</th><th>Daily</th><th>Action</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <div class="toolbar">
+            <input id="noteKeyId" class="input" placeholder="Key ID" style="max-width:200px" />
+            <input id="noteText" class="input" placeholder="New note content" />
+            <button id="saveNote" class="btn">Save Note</button>
+          </div>
+          <div id="actionMsg" class="muted"></div>
+        </div>
+
+        <div class="card section">
+          <h2>Policy Tester</h2>
+          <div class="grid-3">
+            <div>
+              <label>Table FQN</label>
+              <input id="ptFqn" class="input" placeholder="public.products" />
+            </div>
+            <div>
+              <label>Allowed Fields</label>
+              <input id="ptAllowed" class="input" placeholder="id,name,price,created_at" />
+            </div>
+            <div>
+              <label>Row Filter SQL</label>
+              <input id="ptRowFilter" class="input" placeholder="is_active = true" />
+            </div>
+          </div>
+          <div class="grid-3">
+            <div>
+              <label>select</label>
+              <input id="ptSelect" class="input" placeholder="id,name,price" />
+            </div>
+            <div>
+              <label>where</label>
+              <input id="ptWhere" class="input" placeholder="price.gt.100,name.ilike.%run%" />
+            </div>
+            <div>
+              <label>order / limit</label>
+              <div class="toolbar">
+                <input id="ptOrder" class="input" placeholder="-created_at" style="max-width:180px" />
+                <input id="ptLimit" class="input" type="number" value="50" style="max-width:120px" />
+              </div>
+            </div>
+          </div>
+          <div class="toolbar" style="margin-top:8px">
+            <button id="ptRun" class="btn btn-primary">Validate & Generate</button>
+          </div>
+          <div class="row">
+            <label>Result</label>
+            <div id="ptResult" class="mono muted" style="white-space: pre-wrap"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/admin.js?v=0.1.4"></script>
+</body>
+</html>

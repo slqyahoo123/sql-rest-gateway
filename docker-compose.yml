@@ -1,0 +1,37 @@
+version: '3.9'
+services:
+  meta-db:
+    image: postgres:16
+    container_name: sqlrest_meta_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: sqlrest_meta
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./migrations:/docker-entrypoint-initdb.d
+
+  redis:
+    image: redis:7
+    container_name: sqlrest_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+
+  app:
+    image: node:20-alpine
+    container_name: sqlrest_app
+    working_dir: /usr/src/app
+    volumes:
+      - ./:/usr/src/app
+    env_file:
+      - ./.env
+    command: sh -c "npm install && npx nest start --watch"
+    ports:
+      - "3000:3000"
+    depends_on:
+      - meta-db
+      - redis
+
