@@ -46,7 +46,8 @@
         document.addEventListener('DOMContentLoaded', function(){
           var a = document.getElementById('swaggerLink');
           if (!a) return;
-          var api = new URL(location.href).searchParams.get('api') || getParamFromHash('api') || localStorage.getItem('swagger_api_base');
+          var aDefault = (a.getAttribute('data-default-api') || '').trim();
+          var api = new URL(location.href).searchParams.get('api') || getParamFromHash('api') || localStorage.getItem('swagger_api_base') || aDefault;
           api = sanitizeApi(api);
           if (api) {
             localStorage.setItem('swagger_api_base', api);
@@ -71,7 +72,7 @@
         <p class="lead">Self‑hosted gateway with per‑key field whitelists, row filters, rate limits and audit logs. Ship in minutes—no backend to build.</p>
         <div class="cta">
           <a class="btn btn-primary" href="https://github.com/slqyahoo123/sql-rest-gateway#quick-start" target="_blank" rel="noopener">Get Started</a>
-          <a id="swaggerLink" class="btn" href="#">Live Swagger</a>
+          <a id="swaggerLink" class="btn" href="#" data-default-api="https://sql-rest-gateway.fly.dev">Live Swagger</a>
           <a class="btn" href="https://github.com/slqyahoo123/sql-rest-gateway" target="_blank" rel="noopener">GitHub</a>
         </div>
         <div class="badges">
