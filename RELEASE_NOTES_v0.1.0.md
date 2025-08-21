@@ -16,3 +16,5 @@ Highlights
 Notes
 - Intended for read‑only use cases; write operations are out of scope
 - Configure environment per `docs/en/ENV_Variables.md`
+
+

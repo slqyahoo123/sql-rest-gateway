@@ -12,3 +12,5 @@ Enforcement
 - Actions include warnings, moderation, or removal if needed
 
 Adapted in spirit from the Contributor Covenant.
+
+

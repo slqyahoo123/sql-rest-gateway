@@ -5,6 +5,8 @@
 ![Node](https://img.shields.io/badge/node-%3E%3D20-green)
 ![Docker](https://img.shields.io/badge/docker-compose-blue?logo=docker)
 
+Website: https://lingxinzhisuan.github.io/sql-rest-gateway
+
 Self‑hosted, secure, read‑only SQL→API gateway for PostgreSQL.
 
 ## Features

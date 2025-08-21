@@ -12,3 +12,5 @@
 
 ## Non‑Goals
 - Write operations or authorization beyond defined row filters.
+
+
