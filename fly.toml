@@ -1,0 +1,45 @@
+# fly.toml generated for SQL→API Gateway
+app = "sql-rest-gateway"
+primary_region = "sin" # set to your nearest region, e.g., sin, hkg, nrt, iad, fra
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  APP_PORT = "8080"
+  NODE_ENV = "production"
+  # Fill these via `fly secrets set ...`
+  # META_DB_URL = ""
+  # REDIS_URL = ""
+  # ADMIN_TOKEN = "admin_prod"
+  # API_KEY_HASH_SALT = "change_me"
+  # DSN_ENC_KEY = "please_change_this"
+  # CORS_ORIGINS = "https://slqyahoo123.github.io"
+  # EXAMPLE_API_KEY = ""
+
+[[services]]
+  internal_port = 8080
+  processes = ["app"]
+
+  [[services.ports]]
+    port = 80
+    handlers = ["http"]
+
+  [[services.ports]]
+    port = 443
+    handlers = ["tls", "http"]
+
+  [services.concurrency]
+    type = "connections"
+    hard_limit = 100
+    soft_limit = 50
+
+  [[services.tcp_checks]]
+    interval = "15s"
+    timeout = "2s"
+
+  [[services.http_checks]]
+    interval = "20s"
+    timeout = "5s"
+    method = "get"
+    path = "/health"
