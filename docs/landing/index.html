@@ -30,15 +30,30 @@
   <script defer data-domain="slqyahoo123.github.io" src="https://plausible.io/js/script.js"></script>
   <script>
     (function(){
+      function getParamFromHash(key){
+        try {
+          var h = (location.hash || '').replace(/^#/, '');
+          var sp = new URLSearchParams(h);
+          return sp.get(key);
+        } catch(e) { return null; }
+      }
+      function sanitizeApi(url){
+        if (!url) return null;
+        if (!/^(https?:)\/\//.test(url)) return null;
+        try { return new URL(url).toString().replace(/\/+$/, ''); } catch(e){ return null; }
+      }
       try {
         document.addEventListener('DOMContentLoaded', function(){
           var a = document.getElementById('swaggerLink');
           if (!a) return;
-          var api = new URL(location.href).searchParams.get('api');
-          if (api && /^(https?:)\/\//.test(api)) {
-            a.href = api.replace(/\/+$/, '') + '/docs';
+          var api = new URL(location.href).searchParams.get('api') || getParamFromHash('api') || localStorage.getItem('swagger_api_base');
+          api = sanitizeApi(api);
+          if (api) {
+            localStorage.setItem('swagger_api_base', api);
+            a.href = api + '/docs';
             a.target = '_blank';
             a.rel = 'noopener';
+            a.textContent = 'Live Swagger';
           } else {
             a.href = 'https://github.com/slqyahoo123/sql-rest-gateway#quick-start';
             a.textContent = 'Live Swagger (configure ?api=YOUR_API_BASE)';
