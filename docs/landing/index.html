@@ -28,6 +28,25 @@
     footer { margin: 36px 0 12px; text-align:center; color: var(--muted); font-size: 12px; }
   </style>
   <script defer data-domain="slqyahoo123.github.io" src="https://plausible.io/js/script.js"></script>
+  <script>
+    (function(){
+      try {
+        document.addEventListener('DOMContentLoaded', function(){
+          var a = document.getElementById('swaggerLink');
+          if (!a) return;
+          var api = new URL(location.href).searchParams.get('api');
+          if (api && /^(https?:)\/\//.test(api)) {
+            a.href = api.replace(/\/+$/, '') + '/docs';
+            a.target = '_blank';
+            a.rel = 'noopener';
+          } else {
+            a.href = 'https://github.com/slqyahoo123/sql-rest-gateway#quick-start';
+            a.textContent = 'Live Swagger (configure ?api=YOUR_API_BASE)';
+          }
+        });
+      } catch (e) {}
+    })();
+  </script>
 </head>
 <body>
   <div class="container">
@@ -37,7 +56,7 @@
         <p class="lead">Self‑hosted gateway with per‑key field whitelists, row filters, rate limits and audit logs. Ship in minutes—no backend to build.</p>
         <div class="cta">
           <a class="btn btn-primary" href="https://github.com/slqyahoo123/sql-rest-gateway#quick-start" target="_blank" rel="noopener">Get Started</a>
-          <a class="btn" href="http://localhost:3000/docs">Live Swagger</a>
+          <a id="swaggerLink" class="btn" href="#">Live Swagger</a>
           <a class="btn" href="https://github.com/slqyahoo123/sql-rest-gateway" target="_blank" rel="noopener">GitHub</a>
         </div>
         <div class="badges">
